@@ -100,7 +100,7 @@ const Cart = () => {
       description: "Cart payment",
       order_id: paymentOrder.orderId,
 
-      handler: async (response) => {
+      handler: async () => {
         try {
           // Payment successful
           const orderResponse = await placeOrder({
