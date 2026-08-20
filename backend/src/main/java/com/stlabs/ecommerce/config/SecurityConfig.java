@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -46,7 +47,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
 
                 // Use our explicit CORS configuration
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+              
 
                 // JWT based authentication - no server sessions
                 .sessionManagement(session ->
@@ -134,53 +135,7 @@ public class SecurityConfig {
      * - Vercel preview frontend
      * - Local development
      */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(List.of(
-                "https://prime-basket-1eim.vercel.app",
-                "https://prime-basket-1eim-git-main-amit921.vercel.app",
-                "http://localhost:5173",
-                "http://localhost:3000"
-        ));
-
-        configuration.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "PATCH",
-                "DELETE",
-                "OPTIONS"
-        ));
-
-        // Allow all request headers.
-        // This is useful for Authorization, Content-Type,
-        // and browser-generated CORS headers.
-        configuration.setAllowedHeaders(List.of("*"));
-
-        // Headers that frontend JavaScript is allowed to read
-        configuration.setExposedHeaders(List.of(
-                "Authorization"
-        ));
-
-        // Required if frontend sends credentials/cookies
-        configuration.setAllowCredentials(true);
-
-        // Cache CORS preflight response for 1 hour
-        configuration.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration(
-                "/**",
-                configuration
-        );
-
-        return source;
-    }
+   
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
