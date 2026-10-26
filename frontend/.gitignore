@@ -1,0 +1,44 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+# Secrets and local environment
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+# Google OAuth credentials and tokens
+**/credentials.json
+**/token.json
+**/gmail-oauth/
+# Local configuration backups
+**/application.properties.backup
+**/application-local.properties
+# Build output
+**/target/
+**/node_modules/
+**/dist/

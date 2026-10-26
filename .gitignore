@@ -1,0 +1,31 @@
+.env
+.env.*
+!.env.example
+!**/.env.example
+backend/target/
+frontend/node_modules/
+frontend/dist/
+.vscode/
+.idea/
+# Secrets and local environment
+**/.env
+**/.env.*
+# Google OAuth credentials and tokens
+**/credentials.json
+**/token.json
+**/gmail-oauth/
+# Local configuration backups
+**/application.properties.backup
+**/application-local.properties
+# Build output
+**/target/
+**/node_modules/
+**/dist/
+
+# Exclude test configuration
+
+
+# Backup and OS files
+*.backup
+.DS_Store
+**/.DS_Store

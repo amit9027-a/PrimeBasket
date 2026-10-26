@@ -1,0 +1,92 @@
+Folder PATH listing for volume Windows
+Volume serial number is CE09-0150
+C:\DESKTOP\PRIMEBASKETt\FRONTEND\SRC
+|   App.tsx
+|   hooks.ts
+|   index.css
+|   main.tsx
+|   store.ts
+|   
++---api
+|       axios.ts
+|       
++---assets
+|       hero.png
+|       react.svg
+|       vite.svg
+|       
++---components
+|   |   create-product-form.tsx
+|   |   footer.tsx
+|   |   login-form.tsx
+|   |   navbar.tsx
+|   |   product-card.tsx
+|   |   signup-form.tsx
+|   |   
+|   \---ui
+|           accordion.tsx
+|           alert.tsx
+|           aspect-ratio.tsx
+|           attachment.tsx
+|           badge.tsx
+|           bubble.tsx
+|           button-group.tsx
+|           button.tsx
+|           card.tsx
+|           carousel.tsx
+|           field.tsx
+|           hover-card.tsx
+|           input.tsx
+|           item.tsx
+|           kbd.tsx
+|           label.tsx
+|           navigation-menu.tsx
+|           pagination.tsx
+|           select.tsx
+|           separator.tsx
+|           skeleton.tsx
+|           spinner.tsx
+|           switch.tsx
+|           table.tsx
+|           textarea.tsx
+|           toggle.tsx
+|           
++---context
+|       AuthContext.tsx
+|       
++---features
+|   +---cart
+|   |       cartAPI.ts
+|   |       cartSlice.ts
+|   |       cartThunks.ts
+|   |       
+|   +---orders
+|   |       orderAPI.ts
+|   |       
+|   \---payment
+|           paymentAPI.ts
+|           
++---lib
+|       utils.ts
+|       
++---pages
+|       Cart.tsx
+|       CreateProduct.tsx
+|       Home-ui.tsx
+|       Home.tsx
+|       Login.tsx
+|       Orders.tsx
+|       Products.tsx
+|       Signup.tsx
+|       
++---routes
+|       AdminRoute.tsx
+|       ProtectedRoute.tsx
+|       
++---types
+|       razorpay.d.ts
+|       
+\---utils
+        formatPrice.ts
+        loadRazorpay.ts
+        
