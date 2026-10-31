@@ -1,12 +1,9 @@
 
 package com.stlabs.ecommerce.auth.service;
 
-import com.google.api.client.auth.oauth2.StoredCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.util.store.DataStore;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
 import com.google.auth.http.HttpCredentialsAdapter;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Base64;
 import java.util.Properties;
 
@@ -35,15 +31,11 @@ public class EmailService {
     private static final String APPLICATION_NAME =
             "PrimeBasket Gmail OTP";
 
-    // Must match the user ID used in GmailOAuthSetup.authorize(...)
-    private static final String OAUTH_USER_ID =
-            "primebasket-gmail";
-
     @Value("${gmail.oauth.credentials-path:${user.dir}/gmail-oauth/credentials.json}")
     private String credentialsPath;
 
-    @Value("${gmail.oauth.token-store-path:${user.dir}/gmail-oauth/oauth-tokens}")
-    private String tokenStorePath;
+    @Value("${GMAIL_OAUTH_REFRESH_TOKEN:}")
+    private String configuredRefreshToken;
 
     @Value("${gmail.sender:}")
     private String configuredSenderEmail;
@@ -55,7 +47,8 @@ public class EmailService {
 
             if (senderEmail.isBlank()) {
                 throw new IllegalStateException(
-                        "Gmail sender email is not configured. Set gmail.sender."
+                        "Gmail sender email is not configured. "
+                        + "Set GMAIL_SENDER."
                 );
             }
 
@@ -68,7 +61,7 @@ public class EmailService {
                     + otp + "\n\n"
                     + "This OTP is valid for 10 minutes.\n"
                     + "Please do not share this OTP with anyone.\n\n"
-                    + "If you did not create an PrimeBasket account, "
+                    + "If you did not create a PrimeBasket account, "
                     + "you can safely ignore this email.\n\n"
                     + "Regards,\n"
                     + "PrimeBasket Team";
@@ -85,13 +78,16 @@ public class EmailService {
                     .execute();
 
             System.out.println(
-                    "PrimeBasket OTP email sent successfully to: " + toEmail
+                    "PrimeBasket OTP email sent successfully to: "
+                            + toEmail
             );
 
         } catch (Exception exception) {
+            // Do not log credentials, access tokens, or refresh tokens.
             System.err.println(
                     "Failed to send PrimeBasket OTP email: "
-                            + exception.getMessage()
+                            + exception.getClass().getSimpleName()
+                            + ": " + exception.getMessage()
             );
 
             throw new IllegalStateException(
@@ -103,7 +99,6 @@ public class EmailService {
 
     private Gmail getGmailService() throws Exception {
         File credentialsFile = new File(credentialsPath);
-        File tokenStoreDirectory = new File(tokenStorePath);
 
         if (!credentialsFile.isFile()) {
             throw new IllegalStateException(
@@ -112,10 +107,11 @@ public class EmailService {
             );
         }
 
-        if (!tokenStoreDirectory.isDirectory()) {
+        if (configuredRefreshToken == null
+                || configuredRefreshToken.isBlank()) {
             throw new IllegalStateException(
-                    "Google OAuth token store directory not found: "
-                            + tokenStoreDirectory.getAbsolutePath()
+                    "GMAIL_OAUTH_REFRESH_TOKEN environment variable "
+                            + "is not configured."
             );
         }
 
@@ -131,35 +127,19 @@ public class EmailService {
         String clientId = clientSecrets.getDetails().getClientId();
         String clientSecret = clientSecrets.getDetails().getClientSecret();
 
-        // Read the same credential store used by GmailOAuthSetup.
-        FileDataStoreFactory storeFactory =
-                new FileDataStoreFactory(tokenStoreDirectory);
-
-        DataStore<StoredCredential> credentialStore =
-                storeFactory.getDataStore(
-                        StoredCredential.DEFAULT_DATA_STORE_ID
-                );
-
-        StoredCredential storedCredential =
-                credentialStore.get(OAUTH_USER_ID);
-
-        if (storedCredential == null
-                || storedCredential.getRefreshToken() == null
-                || storedCredential.getRefreshToken().isBlank()) {
+        if (clientId == null || clientId.isBlank()
+                || clientSecret == null || clientSecret.isBlank()) {
             throw new IllegalStateException(
-                    "OAuth refresh token is missing from the credential store. "
-                    + "Run GmailOAuthSetup again and authorize the correct account."
+                    "Google OAuth client ID or client secret is missing "
+                            + "from credentials.json."
             );
         }
 
         UserCredentials credentials = UserCredentials.newBuilder()
                 .setClientId(clientId)
                 .setClientSecret(clientSecret)
-                .setRefreshToken(storedCredential.getRefreshToken())
+                .setRefreshToken(configuredRefreshToken.trim())
                 .build();
-
-        // Refreshes the access token using the saved refresh token.
-        credentials.refreshIfExpired();
 
         return new Gmail.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
